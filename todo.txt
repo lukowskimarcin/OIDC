@@ -1,0 +1,10 @@
+https://www.angulararchitects.io/blog/oauth2-with-spring-angular-keycloak-spring-for-resource-server/
+https://mariodante.medium.com/implementing-oauth2-login-in-angular-17-with-google-cloud-client-id-integration-5a7652830f05
+
+
+
+client_id: angular_test
+
+
+
+angular-oauth2-oidc
