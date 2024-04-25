@@ -53,4 +53,8 @@ export class AuthService {
   getToken() {
     return this.oAuthService.getAccessToken();
   }
+
+  refreshToken() {
+    localStorage.setItem('token', this.oAuthService.getAccessToken());
+  }
 }

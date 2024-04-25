@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, retry, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,10 +14,40 @@ import { HttpClient } from '@angular/common/http';
 })
 export class DashboardComponent {
   testCustomer() {
-    this.client.get('http://localhost:8080/api/v1/testCustomer').subscribe();
+    this.client
+      .get('http://localhost:8080/api/v1/testCustomer')
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            console.error('Błąd autoryzacji: Użytkownik nie jest zalogowany.');
+            this.authService.refreshToken();
+            return this.client.get('http://localhost:8080/api/v1/testCustomer');
+          }
+          return throwError(
+            () => new Error('Wystąpił błąd. Spróbuj ponownie później')
+          );
+        }),
+        retry(1) // Możesz zmienić liczbę prób, jeśli chcesz więcej niż jedną
+      )
+      .subscribe();
   }
   testAdmin() {
-    this.client.get('http://localhost:8080/api/v1/testAdmin').subscribe();
+    this.client
+      .get('http://localhost:8080/api/v1/testAdmin')
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            console.error('Błąd autoryzacji: Użytkownik nie jest zalogowany.');
+            this.authService.refreshToken();
+            return this.client.get('http://localhost:8080/api/v1/testAdmin');
+          }
+          return throwError(
+            () => new Error('Wystąpił błąd. Spróbuj ponownie później')
+          );
+        }),
+        retry(1) // Możesz zmienić liczbę prób, jeśli chcesz więcej niż jedną
+      )
+      .subscribe();
   }
 
   private authService = inject(AuthService);
