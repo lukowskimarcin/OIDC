@@ -16,9 +16,13 @@ export class AuthService {
   initConfiguration() {
     const authConfig: AuthConfig = {
       issuer: 'http://localhost:8081/realms/angular',
+      tokenEndpoint:
+        'http://localhost:8081/realms/angular/protocol/openid-connect/token',
+      userinfoEndpoint:
+        'http://localhost:8081/realms/angular/protocol/openid-connect/userinfo',
       clientId: 'angular_test',
       redirectUri: window.location.origin + '/dashboard',
-      scope: 'openid profile email',
+      scope: 'openid profile email roles address',
       responseType: 'code',
       requireHttps: false,
       showDebugInformation: true,
@@ -27,6 +31,8 @@ export class AuthService {
     this.oAuthService.configure(authConfig);
     this.oAuthService.setupAutomaticSilentRefresh();
     this.oAuthService.loadDiscoveryDocumentAndTryLogin();
+
+    localStorage.setItem('token', this.oAuthService.getAccessToken());
   }
 
   login() {
